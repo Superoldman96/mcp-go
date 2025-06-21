@@ -40,7 +40,9 @@ func WithEndpointPath(endpointPath string) StreamableHTTPOption {
 // to StatelessSessionIdManager.
 func WithStateLess(stateLess bool) StreamableHTTPOption {
 	return func(s *StreamableHTTPServer) {
-		s.sessionIdManager = &StatelessSessionIdManager{}
+		if stateLess {
+			s.sessionIdManager = &StatelessSessionIdManager{}
+		}
 	}
 }
 
@@ -374,7 +376,7 @@ func (s *StreamableHTTPServer) handleGet(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
-	w.WriteHeader(http.StatusAccepted)
+	w.WriteHeader(http.StatusOK)
 
 	flusher, ok := w.(http.Flusher)
 	if !ok {
@@ -614,9 +616,7 @@ func (s *StatelessSessionIdManager) Generate() string {
 	return ""
 }
 func (s *StatelessSessionIdManager) Validate(sessionID string) (isTerminated bool, err error) {
-	if sessionID != "" {
-		return false, fmt.Errorf("session id is not allowed to be set when stateless")
-	}
+	// In stateless mode, ignore session IDs completely - don't validate or reject them
 	return false, nil
 }
 func (s *StatelessSessionIdManager) Terminate(sessionID string) (isNotAllowed bool, err error) {
