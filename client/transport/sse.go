@@ -194,7 +194,11 @@ func (c *SSE) readSSE(reader io.ReadCloser) {
 		if err != nil {
 			if err == io.EOF {
 				// Process any pending event before exit
-				if event != "" && data != "" {
+				if data != "" {
+					// If no event type is specified, use empty string (default event type)
+					if event == "" {
+						event = "message"
+					}
 					c.handleSSEEvent(event, data)
 				}
 				break
@@ -209,7 +213,11 @@ func (c *SSE) readSSE(reader io.ReadCloser) {
 		line = strings.TrimRight(line, "\r\n")
 		if line == "" {
 			// Empty line means end of event
-			if event != "" && data != "" {
+			if data != "" {
+				// If no event type is specified, use empty string (default event type)
+				if event == "" {
+					event = "message"
+				}
 				c.handleSSEEvent(event, data)
 				event = ""
 				data = ""
@@ -418,6 +426,12 @@ func (c *SSE) Close() error {
 	c.mu.Unlock()
 
 	return nil
+}
+
+// GetSessionId returns the session ID of the transport.
+// Since SSE does not maintain a session ID, it returns an empty string.
+func (c *SSE) GetSessionId() string {
+	return ""
 }
 
 // SendNotification sends a JSON-RPC notification to the server without expecting a response.
