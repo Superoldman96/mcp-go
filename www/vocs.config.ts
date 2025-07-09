@@ -2,6 +2,9 @@ import { defineConfig } from 'vocs'
 
 export default defineConfig({
   title: 'MCP-Go',
+  search: {
+    fuzzy: true
+  },
   baseUrl: 'https://mcp-go.dev',
   basePath: '/',
   logoUrl: '/logo.png',
@@ -94,6 +97,20 @@ export default defineConfig({
         {
           text: 'Client Transports',
           link: '/clients/transports',
+        },
+      ],
+    },
+    {
+      text: 'Advanced',
+      collapsed: true,
+      items: [
+        {
+          text: 'Server Sampling',
+          link: '/servers/advanced-sampling',
+        },
+        {
+          text: 'Client Sampling',
+          link: '/clients/advanced-sampling',
         },
       ],
     },
